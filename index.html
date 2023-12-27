@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Répar Info</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #FFA500;
+            color: #00FF00;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #000;
+            color: #00FF00;
+            text-align: center;
+            padding: 1em;
+            font-size: 2em;
+            font-family: 'Fira Code', monospace;
+        }
+
+        #devis {
+            background-color: #222;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px;
+        }
+
+        label, button {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: #00FF00;
+        }
+
+        input[type="number"], #resultat-devis {
+            padding: 5px;
+            font-size: 1em;
+            color: #000;
+            margin-bottom: 10px;
+        }
+
+        #nb-usb-container label {
+            color: #00FF00; /* Remis en vert */
+        }
+
+        #nb-usb-container {
+            display: block;
+        }
+
+        p.yellow-text {
+            color: yellow;
+            margin: 0;
+        }
+
+        #resultat-vhs, #resultat-super8-3, #resultat-super8-5, #resultat-super8-7, #resultat-usb {
+            font-size: 1em;
+            color: #FFFFFF;
+            margin-top: 20px;
+        }
+
+        #resultat-devis {
+            color: #FFFFFF;
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1em;
+            background-color: #000;
+            color: #00FF00;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        Répar Info
+    </header>
+
+    <section id="devis">
+        <h2>Calculateur de devis</h2>
+        <form id="formulaire-devis">
+            <div>
+                <label for="nb-vhs">Nombre de cassettes VHS :</label>
+                <input type="number" id="nb-vhs" name="nb-vhs" min="0">
+            </div>
+
+            <div>
+                <label>Nombre de bobines Super 8 :</label>
+                <div>
+                    <input type="number" id="nb-3-pouces" name="nb-3-pouces" min="0">
+                    <label for="nb-3-pouces">3 pouces</label>
+                    <p class="yellow-text">75 mm, 15 mètres, 4 min. 06</p>
+                </div>
+
+                <div>
+                    <input type="number" id="nb-5-pouces" name="nb-5-pouces" min="0">
+                    <label for="nb-5-pouces">5 pouces</label>
+                    <p class="yellow-text">125 mm, 60 mètres, 16 min. 20</p>
+                </div>
+
+                <div>
+                    <input type="number" id="nb-7-pouces" name="nb-7-pouces" min="0">
+                    <label for="nb-7-pouces">7 pouces</label>
+                    <p class="yellow-text">145 mm, 90 mètres, 24 min. 30</p>
+                </div>
+            </div>
+
+            <div id="nb-usb-container">
+                <label for="nb-usb">Nombre de clés USB :</label>
+                <input type="number" id="nb-usb" name="nb-usb" min="0">
+            </div>
+        </form>
+        <div id="resultat-devis"></div>
+        <div id="resultat-vhs"></div>
+        <div id="resultat-super8-3"></div>
+        <div id="resultat-super8-5"></div>
+        <div id="resultat-super8-7"></div>
+        <div id="resultat-usb"></div>
+    </section>
+
+    <footer>
+        <!-- Ajoute ici le pied de page si nécessaire -->
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const formulaireDevis = document.getElementById('formulaire-devis');
+            const resultatDevis = document.getElementById('resultat-devis');
+            const resultatVHS = document.getElementById('resultat-vhs');
+            const resultatSuper8_3 = document.getElementById('resultat-super8-3');
+            const resultatSuper8_5 = document.getElementById('resultat-super8-5');
+            const resultatSuper8_7 = document.getElementById('resultat-super8-7');
+            const resultatUSB = document.getElementById('resultat-usb');
+            const champsNombre = document.querySelectorAll('input[type="number"]');
+            const nbUSBContainer = document.getElementById('nb-usb-container');
+
+            function mettreAJourTotal() {
+                const nbVHS = parseInt(document.getElementById('nb-vhs').value) || 0;
+                const nbSuper8_3 = parseInt(document.getElementById('nb-3-pouces').value) || 0;
+                const nbSuper8_5 = parseInt(document.getElementById('nb-5-pouces').value) || 0;
+                const nbSuper8_7 = parseInt(document.getElementById('nb-7-pouces').value) || 0;
+                const nbUSB = parseInt(document.getElementById('nb-usb').value) || 0;
+
+                const tarifVHS = calculerTarifVHS(nbVHS);
+                const tarifSuper8_3 = nbSuper8_3 * 10;
+                const tarifSuper8_5 = nbSuper8_5 * 15;
+                const tarifSuper8_7 = nbSuper8_7 * 20;
+                const tarifUSB = nbUSB * 8;
+
+                const totalDevis = tarifVHS + tarifSuper8_3 + tarifSuper8_5 + tarifSuper8_7 + tarifUSB;
+
+                resultatDevis.innerHTML = `Le devis total est de ${totalDevis.toFixed(2)} euros.`;
+                resultatVHS.innerHTML = `Nombre de cassettes VHS : ${nbVHS}`;
+                resultatSuper8_3.innerHTML = `Nombre de bobines Super 8 (3 pouces) : ${nbSuper8_3}`;
+                resultatSuper8_5.innerHTML = `Nombre de bobines Super 8 (5 pouces) : ${nbSuper8_5}`;
+                resultatSuper8_7.innerHTML = `Nombre de bobines Super 8 (7 pouces) : ${nbSuper8_7}`;
+                resultatUSB.innerHTML = `Nombre de clés USB : ${nbUSB}`;
+            }
+
+            function calculerTarifVHS(nbCassettes) {
+                if (nbCassettes >= 1 && nbCassettes <= 4) {
+                    return nbCassettes * 11.9;
+                } else if (nbCassettes >= 5 && nbCassettes <= 8) {
+                    return nbCassettes * 9.9;
+                } else if (nbCassettes >= 9 && nbCassettes <= 12) {
+                    return nbCassettes * 7.9;
+                } else if (nbCassettes >= 13) {
+                    return nbCassettes * 5.9;
+                } else {
+                    return 0;
+                }
+            }
+
+            champsNombre.forEach(function(champ) {
+                champ.addEventListener('input', mettreAJourTotal);
+            });
+
+            formulaireDevis.addEventListener('submit', function(event) {
+                event.preventDefault();
+            });
+        });
+    </script>
+</body>
+</html>
